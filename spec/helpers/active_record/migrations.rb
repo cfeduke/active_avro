@@ -16,7 +16,7 @@ class CreatePeople < ActiveRecord::Migration
     create_table :people do |t|
       t.string :name
       t.date :date_of_birth
-      t.references :pet
+      t.integer :parent_id
       t.timestamps
     end
   end

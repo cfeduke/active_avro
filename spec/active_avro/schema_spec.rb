@@ -19,19 +19,8 @@ module ActiveAvro
         ->{Schema.new(Foo)}.should raise_error(::ArgumentError)
       end
       it "assigns klass to the passed parameter" do
-        Schema.new(Person).type.should == Person
+        Schema.new(Person).klass.should == Person
       end
-      context "when reflecting upon Person's schema'" do
-        subject { Schema.new(Person) }
-        it "maps the name" do
-          subject['name'].type.should == :string
-        end
-        it "maps a relationship" do
-          subject['pets'].type.should == Pet
-        end
-      end
-
-
     end
 
     describe "#" do

@@ -1,13 +1,15 @@
 require 'active_avro/complex/record'
+require 'active_avro/complex/union'
+require 'active_avro/complex/null_union'
 
 module ActiveAvro
-  class Schema < Hash
-    attr_accessor :type
+  class Schema
+    attr_accessor :record, :klass
     def initialize(klass)
       raise ArgumentError.new("klass must not be nil") if klass.nil?
       raise ArgumentError.new("klass must respond to columns") unless klass.respond_to? :columns
       raise ArgumentError.new("klass.columns must be an Array") unless klass.columns.is_a?(Array)
-      @type = klass
+      @klass = klass
       map_schema
     end
 
@@ -21,14 +23,9 @@ module ActiveAvro
       end
     end
     def map_schema
-      defined = [@type]
-      @type.columns.each { |c| self[c.name] = c }
-      @type.reflections.each do |k,v|
-        # don't map :belongs_to back to its parent
-        unless v.macro == :belongs_to
-          self[k.to_s] = Schema.recursive_initialize(v.klass, defined)
-        end
-      end
+      defined = [@klass]
+      @record = ActiveAvro::Complex::Record.new(@klass)
+
     end
   end
 end

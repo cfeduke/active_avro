@@ -1,6 +1,7 @@
 require 'rspec'
 require 'active_record'
 require 'helpers/active_avro_helper'
+require 'pry'
 
 # derived from https://github.com/ernie/squeel/blob/master/spec/spec_helper.rb
 RSpec.configure do |config|
