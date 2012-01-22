@@ -26,7 +26,10 @@ module ActiveAvro
             pets.type.embedded?.should be_true
           end
           it "doesn't remap known types as embedded types" do
-
+            parent = subject.fields.find{ |f| f.name = 'parent' }
+            parent.type.type.should == 'record'
+            parent.type.name.should == 'Person'
+            parent.type.fields.length.should == 0
           end
         end
       end
