@@ -11,10 +11,10 @@ module ActiveAvroHelper
     ActiveRecord::Base.establish_connection(SQLITE_SPEC)
 
     # execute migrations
-    require 'helpers/migrations'
+    require 'helpers/active_record/migrations'
 
     # include the models
-    require 'helpers/models'
+    require 'helpers/active_record/models'
   end
 
 
