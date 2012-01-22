@@ -2,3 +2,5 @@ run_guard.rb
 .idea
 .bundle
 .DS_Store
+.rspec
+

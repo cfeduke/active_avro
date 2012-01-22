@@ -6,4 +6,6 @@ group :test, :development do
   gem 'rake'
   gem 'rspec'
   gem 'guard-rspec'
+  gem 'growl'
+  gem 'rb-fsevent'
 end

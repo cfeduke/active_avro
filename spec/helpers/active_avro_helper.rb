@@ -7,23 +7,26 @@ module ActiveAvroHelper
       :adapter => 'sqlite3',
       :database => ':memory:'
   }
-  def ActiveAvroHelper.initialize_database
+  def ActiveAvroHelper.initialize
     ActiveRecord::Base.establish_connection(SQLITE_SPEC)
 
     # create schema by executing migrations
-    CreatePerson.up
+    CreatePeople.up
+
+    # include the models
+    require 'helpers/models/person'
   end
 
-  class CreatePerson < ActiveRecord::Migration
+  class CreatePeople < ActiveRecord::Migration
     def self.up
-      create_table :person do |t|
+      create_table :people do |t|
         t.string :name
         t.date :date_of_birth
         t.timestamps
       end
     end
     def self.down
-      drop_table :person
+      drop_table :people
     end
   end
 end
