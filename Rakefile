@@ -8,11 +8,6 @@ RSpec::Core::RakeTask.new(:spec) do |rspec|
 end
 task :default => :spec
 
-desc "Dump the Avro schema for an ActiveRecord::Base inheriting class to STDOUT"
-task :dump, :model do |t, model|
-
-end
-
 desc "Open an pry session with ActiveAvro with prepared ActiveRecord models"
 task :console do
   require 'pry'
