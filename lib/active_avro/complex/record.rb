@@ -25,9 +25,8 @@ module ActiveAvro
         record.embedded = true
         container =
             case relationship
-              when :belongs_to then ActiveAvro::Complex::NullUnion.new([record])
-              when :has_many then ActiveAvro::Complex::Array.new(record)
-              # TODO other relationships
+              when :belongs_to || :has_one then ActiveAvro::Complex::NullUnion.new([record])
+              when :has_many || :has_and_belongs_to_many then ActiveAvro::Complex::Array.new(record)
               else record
             end
         Field.new(field_name, container)
