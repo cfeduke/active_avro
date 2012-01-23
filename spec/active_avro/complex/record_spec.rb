@@ -22,15 +22,25 @@ module ActiveAvro
           end
           it "creates the relationship-based fields" do
             pets = subject.fields.find{ |f| f.name == 'pets' }
-            pets.type.type.should == 'record'
-            pets.type.embedded?.should be_true
+            pets.should_not be_nil
           end
           it "doesn't remap known types as embedded types" do
-            parent = subject.fields.find{ |f| f.name = 'parent' }
-            parent.type.type.should == 'record'
-            parent.type.name.should == 'Person'
-            parent.type.fields.length.should == 0
+            parent = subject.fields.find{ |f| f.name == 'parent' }
+            parent.type.type.should == NullUnion
+            parent.type.first.name.should == 'Person'
           end
+          it "maps the pets relationship as an embedded type array" do
+            pets = subject.fields.find{ |f| f.name == 'pets' }
+            pets.type.type.should == ActiveAvro::Complex::Array
+            pets.type.items.name.should == 'Pet'
+          end
+        end
+
+        describe "#to_hash" do
+          subject { Record.new(Person).to_hash }
+          its([:type]){ should == 'record' }
+          its([:name]){ should == 'Person' }
+          its([:fields]) { should be_an ::Array }
         end
       end
 
@@ -39,6 +49,21 @@ module ActiveAvro
           subject { Record::Field.from_column(Person.columns.find { |c| c.name == 'name' }) }
           its("name") { should == 'name' }
           its("type") { should == :string }
+        end
+        describe "#to_hash" do
+          subject { Record::Field.new('xyz', TypeConverter.to_avro(:integer)).to_hash }
+          its([:name]) { should == 'xyz' }
+          context "when type is a symbol" do
+            its([:type]) { should == TypeConverter.to_avro(:integer).to_s }
+          end
+          context "when type is a record" do
+            subject { Record::Field.new('xyz', Record.new(Pet)).to_hash }
+            it "should return a hash for :type" do
+              # TODO fix this; right now Pet->owner->Person->parent->Person... needs to be better handled
+              # through recursion
+              #subject[:type].should be_a Hash
+            end
+          end
         end
       end
 
