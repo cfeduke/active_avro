@@ -60,9 +60,7 @@ module ActiveAvro
             subject { Record::Field.new('xyz', Record.new(Pet)).to_hash }
             it "should return a hash for :type" do
               pending
-              # TODO fix this; right now Pet->owner->Person->parent->Person... needs to be better handled
-              # through recursion
-              #subject[:type].should be_a Hash
+              # TODO fix this; right now Pet->owner->Person->parent->Person... needs to be handled
             end
           end
         end

@@ -1,10 +1,10 @@
 source :rubygems
 gem 'activerecord'
-gem 'sqlite3'
+gem 'rake'
 
 group :test, :development do
-  gem 'rake'
   gem 'rspec'
+  gem 'sqlite3'
 end
 
 group :development do
