@@ -1,16 +1,23 @@
+require 'tree'
+
 module ActiveAvro
   module Complex
     # represents the Avro complex type record
     class Record
       attr_accessor :name, :fields
+      attr_reader :node
 
-      def initialize(klass, root_klass = nil)
+      def initialize(klass, node = nil)
         @name = klass.name
-        return if root_klass == klass
-        root_klass = klass if root_klass.nil?
+        @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), klass)
+        node << @node unless node.nil? rescue return # when the klass has already been added at the present depth, don't add it again
+
+        if @node.node_depth > 0
+          return if @node.parentage.any?{ |n| n.content == klass }
+        end
         @fields = klass.columns.map { |c| Field.from_column(c) }
         klass.reflections.each do |k,v|
-          @fields << Record.as_embedded(v.klass, k.to_s, v.macro, root_klass)
+          @fields << Record.as_embedded(v.klass, k.to_s, v.macro, self)
         end
       end
       def embedded?
@@ -20,8 +27,8 @@ module ActiveAvro
         @embedded = value
       end
 
-      def self.as_embedded(klass, field_name, relationship, root_klass)
-        record = Record.new(klass, root_klass)
+      def self.as_embedded(klass, field_name, relationship, ancestor_record)
+        record = Record.new(klass, ancestor_record.node)
         record.embedded = true
         container =
             case relationship

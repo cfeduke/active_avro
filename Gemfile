@@ -1,6 +1,7 @@
 source :rubygems
-gem 'activerecord'
+gem 'rails'
 gem 'rake'
+gem 'rubytree'
 
 group :test, :development do
   gem 'rspec'
