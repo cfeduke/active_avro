@@ -1,4 +1,5 @@
 require 'active_avro/complex'
+require 'json'
 
 module ActiveAvro
   class Schema
@@ -12,7 +13,7 @@ module ActiveAvro
     end
 
     def to_json
-      @record.to_hash
+      @record.to_hash.to_json
     end
   end
 end
