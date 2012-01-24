@@ -7,7 +7,7 @@ module ActiveAvro
       attr_accessor :name, :fields
       attr_reader :node
 
-      def initialize(klass, node = nil)
+      def initialize(klass, node = nil, options = {})
         @name = klass.name
         @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), klass)
         if node.nil?
@@ -19,7 +19,12 @@ module ActiveAvro
         if @node.node_depth > 0
           return if @node.parentage.any?{ |n| n.content == klass }
         end
+        @fields = []
+        filter = options[:filter] || Filter.new
         if klass.respond_to?(:columns)
+          klass.columns.each do |c|
+            @fields << Field.from_column(c) if filter.exclude?(class: c.type, attribute: c.name)
+          end
           @fields = klass.columns.map { |c| Field.from_column(c) }
         end
         if klass.respond_to?(:reflections)

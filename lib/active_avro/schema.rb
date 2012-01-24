@@ -11,9 +11,9 @@ module ActiveAvro
       raise ArgumentError.new("klass.columns must be an Array") unless klass.columns.is_a?(Array)
       @klass = klass
 
+      filter = Filter.build(options[:filter] || [])
 
-
-      @record = ActiveAvro::Complex::Record.new(@klass)
+      @record = ActiveAvro::Complex::Record.new(@klass, nil, :filter => filter)
     end
 
     def to_json

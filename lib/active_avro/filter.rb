@@ -5,6 +5,14 @@ module ActiveAvro
     def initialize()
       self.default_proc = Proc.new {|h,k| h[k] = []}
     end
+    def exclude?(options = {})
+      false if empty? # shortcut
+      key = options[:class].to_s || '*'
+      value = options[:attribute] || '*'
+      is_match = Proc.new { |e| (e =~ value) != nil }
+      binding.pry if key == 'Person' && value == 'parent_id'
+      self[key].empty? || self[key].any?{|e| is_match.call(e)} || (key != '*' && self['*'].any?{|e| is_match.call(e)})
+    end
     # the format is 'class#attribute'
     # the attribute can be a regular expression string
     # use * as a wildcard for class names, i.e. '*#created_by' to nix all created_by attributes
