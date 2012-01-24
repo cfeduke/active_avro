@@ -10,14 +10,23 @@ module ActiveAvro
       def initialize(klass, node = nil)
         @name = klass.name
         @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), klass)
-        node << @node unless node.nil? rescue return # when the klass has already been added at the present depth, don't add it again
+        if node.nil?
+          node = @node
+        else
+          node << @node rescue return # when the klass has already been added at the present depth, don't add it again
+        end
 
         if @node.node_depth > 0
           return if @node.parentage.any?{ |n| n.content == klass }
         end
-        @fields = klass.columns.map { |c| Field.from_column(c) }
-        klass.reflections.each do |k,v|
-          @fields << Record.as_embedded(v.klass, k.to_s, v.macro, self)
+        if klass.respond_to?(:columns)
+          @fields = klass.columns.map { |c| Field.from_column(c) }
+        end
+        if klass.respond_to?(:reflections)
+          klass.reflections.each do |k,v|
+            embedded_record = Record.as_embedded(v.klass, k.to_s, v.macro, self) rescue nil
+            @fields << embedded_record if (embedded_record)
+          end
         end
       end
       def embedded?

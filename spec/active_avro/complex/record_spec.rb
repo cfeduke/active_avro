@@ -58,10 +58,7 @@ module ActiveAvro
           end
           context "when type is a record" do
             subject { Record::Field.new('xyz', Record.new(Pet)).to_hash }
-            it "should return a hash for :type" do
-              pending
-              # TODO fix this; right now Pet->owner->Person->parent->Person... needs to be handled
-            end
+            its([:type]){ should be_a Hash }
           end
         end
       end

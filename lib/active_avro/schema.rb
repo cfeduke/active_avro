@@ -1,14 +1,18 @@
 require 'active_avro/complex'
 require 'json'
+require 'active_avro/filter'
 
 module ActiveAvro
   class Schema
     attr_accessor :record, :klass
-    def initialize(klass)
+    def initialize(klass, options = { })
       raise ArgumentError.new("klass must not be nil") if klass.nil?
       raise ArgumentError.new("klass must respond to columns") unless klass.respond_to? :columns
       raise ArgumentError.new("klass.columns must be an Array") unless klass.columns.is_a?(Array)
       @klass = klass
+
+
+
       @record = ActiveAvro::Complex::Record.new(@klass)
     end
 
