@@ -5,7 +5,7 @@ module ActiveAvro
     describe Record do
       describe "#type" do
         it "is always 'record'" do
-          Record.new(Person).type.should == 'record'
+          Record.new(Person).should be_a Record
         end
       end
       describe "#new" do
@@ -26,19 +26,17 @@ module ActiveAvro
           end
           it "doesn't remap known types as embedded types" do
             parent = subject.fields.find{ |f| f.name == 'parent' }
-            parent.type.type.should == NullUnion
             parent.type.first.name.should == 'Person'
           end
           it "maps the pets relationship as an embedded type array" do
             pets = subject.fields.find{ |f| f.name == 'pets' }
-            pets.type.type.should == ActiveAvro::Complex::Array
+            pets.type.should be_a ActiveAvro::Complex::Array
             pets.type.items.name.should == 'Pet'
           end
         end
 
         describe "#to_hash" do
           subject { Record.new(Person).to_hash }
-          its([:type]){ should == 'record' }
           its([:name]){ should == 'Person' }
           its([:fields]) { should be_an ::Array }
         end

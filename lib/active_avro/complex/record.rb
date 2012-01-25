@@ -6,6 +6,7 @@ module ActiveAvro
     class Record
       attr_accessor :name, :fields
       attr_reader :node
+      attr_reader :filter
 
       def initialize(klass, node = nil, options = {})
         @name = klass.name
@@ -20,10 +21,10 @@ module ActiveAvro
           return if @node.parentage.any?{ |n| n.content == klass }
         end
         @fields = []
-        filter = options[:filter] || Filter.new
+        @filter = options[:filter] || Filter.new
         if klass.respond_to?(:columns)
           klass.columns.each do |c|
-            @fields << Field.from_column(c) if filter.exclude?(class: c.type, attribute: c.name)
+            @fields << Field.from_column(c) if @filter.exclude?(class: c.type, attribute: c.name)
           end
           @fields = klass.columns.map { |c| Field.from_column(c) }
         end
@@ -42,7 +43,7 @@ module ActiveAvro
       end
 
       def self.as_embedded(klass, field_name, relationship, ancestor_record)
-        record = Record.new(klass, ancestor_record.node)
+        record = Record.new(klass, ancestor_record.node, filter: ancestor_record.filter)
         record.embedded = true
         container =
             case relationship
@@ -53,9 +54,6 @@ module ActiveAvro
         Field.new(field_name, container)
       end
 
-      def type
-        'record'
-      end
       def fields
         @fields ||= []
       end
@@ -64,7 +62,7 @@ module ActiveAvro
         # if there are no fields then just return the name - assume its already been embedded
         has_fields = @fields && @fields.length > 0
         return @name unless has_fields
-        h = { :name => @name, :type => type }
+        h = { :name => @name, :type => 'record' }
         if has_fields
           h[:fields] = @fields.map { |f| f.to_hash }
         end
