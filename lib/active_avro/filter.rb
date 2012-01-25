@@ -51,7 +51,6 @@ module ActiveAvro
           filter_expressions << Entry.new(k, e)
         end
       end
-      filter_expressions.each {|fe| puts fe}
       Filter.build(filter_expressions)
     end
 
