@@ -7,3 +7,12 @@ end
 class Pet < ActiveRecord::Base
   belongs_to :person, :foreign_key => :owner_id
 end
+class Choice < ActiveRecord::Base
+
+end
+class Gender < ActiveRecord::Base
+
+end
+class Dma < ActiveRecord::Base
+
+end
