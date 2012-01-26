@@ -5,8 +5,7 @@ module ActiveAvro
     # represents the Avro complex type record
     class Record
       attr_accessor :name, :fields
-      attr_reader :node
-      attr_reader :filter
+      attr_reader :node, :filter, :enums
 
       def initialize(klass, node = nil, options = {})
         @name = klass.name
@@ -22,17 +21,26 @@ module ActiveAvro
         end
         @fields = []
         @filter = options[:filter] || Filter.new
+        @enums = options[:enums] || []
+
         if klass.respond_to?(:columns)
           klass.columns.each do |c|
             @fields << Field.from_column(c) unless @filter.exclude?(class: @name, attribute: c.name)
           end
         end
+
         if klass.respond_to?(:reflections)
           klass.reflections.each do |k,v|
             field_name = k.to_s
             next if @filter.exclude?(class: @name, attribute: field_name)
-            embedded_record = Record.as_embedded(v.klass, field_name, v.macro, self) rescue nil
-            @fields << embedded_record if (embedded_record)
+            enum = @enums.find{ |e| e[:name] == v.klass.name }
+            if enum
+              embedded = Enum.new(v.klass, enum[:options])
+            else
+              embedded = Record.as_embedded(v.klass, field_name, v.macro, self) rescue nil
+            end
+
+            @fields << embedded if (embedded)
           end
         end
       end

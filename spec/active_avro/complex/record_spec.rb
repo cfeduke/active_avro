@@ -10,7 +10,7 @@ module ActiveAvro
       end
       describe "#new" do
         context "when using the Person class" do
-          subject { Record.new(Person) }
+          subject { Record.new(Person, nil, enums: [{ :name => 'Gender' }]) }
           it "sets the name to the class' name" do
             subject.name == 'Person'
           end
@@ -32,6 +32,10 @@ module ActiveAvro
             pets = subject.fields.find{ |f| f.name == 'pets' }
             pets.type.should be_a ActiveAvro::Complex::Array
             pets.type.items.name.should == 'Pet'
+          end
+          it "should create the Gender enum field" do
+            gender = subject.fields.find{ |f| f.name == 'gender' }
+            gender.should be_a ActiveAvro::Complex::Enum
           end
         end
 

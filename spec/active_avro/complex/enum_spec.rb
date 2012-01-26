@@ -9,6 +9,7 @@ module ActiveAvro
           its('zero_name') { should == 'zero_name' }
           its('value_attribute_name') { should == 'id' }
           its('name_attribute_name') { should == 'name' }
+          its('name') { should == 'Choice' }
         end
         context "when no initialization values are passed" do
           subject { Enum.new(nil, { }) }

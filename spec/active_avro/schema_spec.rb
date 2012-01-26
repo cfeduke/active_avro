@@ -22,9 +22,5 @@ module ActiveAvro
         Schema.new(Person).klass.should == Person
       end
     end
-
-    describe "#" do
-
-    end
   end
 end
