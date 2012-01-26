@@ -2,7 +2,7 @@ require 'active_avro'
 
 module ActiveAvro
   module Generators
-    class SchemaDumpGenerator < Rails::Generators::NamedBase
+    class SchemaGenerator < Rails::Generators::NamedBase
       argument :name, :type => :string
       class_option :human_readable, :type => :boolean, :default => true, :alias => '-h', :desc => 'Outputs Avro schema file in human readable JSON (instead of compact)'
       class_option :console, :type => :boolean, :default => true, :alias => '-c', :desc => 'Output to STDOUT instead of file.'
@@ -17,14 +17,26 @@ module ActiveAvro
           begin
             filter = ActiveAvro::Filter.from_yaml(File.open(IGNORE_FILTER_PATH))
           rescue
-            console_message %Q{Warning: unable to YAML::load #{IGNORE_FILTER_PATH} due to #{$!}}
+            console_message %Q{Warning: unable to load #{IGNORE_FILTER_PATH} due to #{$!}}
           end
         else
           filter = ActiveAvro::Filter.new
           console_message %Q{Warning: no "#{IGNORE_FILTER_PATH}" file, all attributes will be reflected in the schema.}
         end
-
-        s = ActiveAvro::Schema.new(name.constantize, filter: filter)
+        enums = []
+        if File.exists? ENUM_PATH
+          begin
+            enums_data = YAML::load(File.open(ENUM_PATH))
+            # Model: { options }
+            enums_data.each do |e|
+              enums << { e.first => e.second }
+            end
+          rescue
+            console_message %Q{Warning: unable to load #{ENUM_PATH} due to #{$!}}
+            enums = [] # reset, just in case
+          end
+        end
+        s = ActiveAvro::Schema.new(name.constantize, filter: filter, enums: enums)
 
         str_json = s.to_json
         if options[:human_readable]

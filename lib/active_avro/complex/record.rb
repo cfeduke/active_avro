@@ -33,14 +33,14 @@ module ActiveAvro
           klass.reflections.each do |k,v|
             field_name = k.to_s
             next if @filter.exclude?(class: @name, attribute: field_name)
-            enum = @enums.find{ |e| e[:name] == v.klass.name }
+            enum = @enums.find{ |e| e.keys.first == v.klass.name }
             if enum
-              embedded = Enum.new(v.klass, enum[:options])
+              embedded = Enum.new(v.klass, enum.values.first)
             else
-              embedded = Record.as_embedded(v.klass, field_name, v.macro, self) rescue nil
+              embedded = Record.as_embedded(v.klass, v.macro, self) rescue nil
             end
 
-            @fields << embedded if (embedded)
+            @fields << Field.new(field_name, embedded) if (embedded)
           end
         end
       end
@@ -51,8 +51,8 @@ module ActiveAvro
         @embedded = value
       end
 
-      def self.as_embedded(klass, field_name, relationship, ancestor_record)
-        record = Record.new(klass, ancestor_record.node, filter: ancestor_record.filter)
+      def self.as_embedded(klass, relationship, ancestor_record)
+        record = Record.new(klass, ancestor_record.node, filter: ancestor_record.filter, enums: ancestor_record.enums)
         record.embedded = true
         container =
             case relationship
@@ -60,7 +60,7 @@ module ActiveAvro
               when :has_many || :has_and_belongs_to_many then ActiveAvro::Complex::Array.new(record)
               else record
             end
-        Field.new(field_name, container)
+        container
       end
 
       def fields
