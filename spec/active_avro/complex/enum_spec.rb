@@ -5,10 +5,10 @@ module ActiveAvro
     describe Enum do
       describe '#initialize' do
         context "when passed values" do
-          subject { Enum.new(Choice, zero_name: 'zero_name', value_attribute_name: 'van', name_attribute_name: 'nan') }
+          subject { Enum.new(Choice, zero_name: 'zero_name', value_attribute_name: 'id', name_attribute_name: 'name') }
           its('zero_name') { should == 'zero_name' }
-          its('value_attribute_name') { should == 'van' }
-          its('name_attribute_name') { should == 'nan' }
+          its('value_attribute_name') { should == 'id' }
+          its('name_attribute_name') { should == 'name' }
         end
         context "when no initialization values are passed" do
           subject { Enum.new(nil, { }) }
@@ -37,6 +37,13 @@ module ActiveAvro
           its('first') { should == { value: 0, name: 'Unknown' } }
           its('last') { should == { value: 301, name: '22407' } }
         end
+      end
+
+      describe '#to_partial_schema' do
+        subject { Enum.new(Choice).to_partial_schema }
+        its([:type]) { should == 'enum' }
+        its([:name]) { should == 'Choice' }
+        its([:symbols]) { should == %w(Unknown Yes No) }
       end
     end
   end
