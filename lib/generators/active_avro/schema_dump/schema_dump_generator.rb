@@ -8,6 +8,7 @@ module ActiveAvro
       class_option :console, :type => :boolean, :default => true, :alias => '-c', :desc => 'Output to STDOUT instead of file.'
 
       IGNORE_FILTER_PATH = 'config/active_avro_ignore_filter.yml'
+      ENUM_PATH = 'config/active_avro_enums.yml'
 
       def execute
         # try to read ignore filter
