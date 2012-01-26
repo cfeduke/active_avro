@@ -16,7 +16,7 @@ module ActiveAvro
           begin
             filter = ActiveAvro::Filter.from_yaml(File.open(IGNORE_FILTER_PATH))
           rescue
-            console_message %Q{Warning: unable to YAML::load #{IGNORE_FILTER_PATH} due to a problem.}
+            console_message %Q{Warning: unable to YAML::load #{IGNORE_FILTER_PATH} due to #{$!}}
           end
         else
           filter = ActiveAvro::Filter.new
@@ -24,6 +24,7 @@ module ActiveAvro
         end
 
         s = ActiveAvro::Schema.new(name.constantize, filter: filter)
+
         str_json = s.to_json
         if options[:human_readable]
           begin

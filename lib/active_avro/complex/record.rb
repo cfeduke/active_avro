@@ -24,13 +24,14 @@ module ActiveAvro
         @filter = options[:filter] || Filter.new
         if klass.respond_to?(:columns)
           klass.columns.each do |c|
-            @fields << Field.from_column(c) if @filter.exclude?(class: c.type, attribute: c.name)
+            @fields << Field.from_column(c) unless @filter.exclude?(class: @name, attribute: c.name)
           end
-          @fields = klass.columns.map { |c| Field.from_column(c) }
         end
         if klass.respond_to?(:reflections)
           klass.reflections.each do |k,v|
-            embedded_record = Record.as_embedded(v.klass, k.to_s, v.macro, self) rescue nil
+            field_name = k.to_s
+            next if @filter.exclude?(class: @name, attribute: field_name)
+            embedded_record = Record.as_embedded(v.klass, field_name, v.macro, self) rescue nil
             @fields << embedded_record if (embedded_record)
           end
         end

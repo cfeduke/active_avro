@@ -4,7 +4,7 @@ module ActiveAvro
   # used to filter away attributes from an ActiveRecord model so they aren't serialized as
   # part of the object graph
   class Filter < Hash
-    def initialize()
+    def initialize
       self.default_proc = Proc.new {|h,k| h[k] = []}
     end
     def exclude?(options = {})
@@ -12,7 +12,18 @@ module ActiveAvro
       key = options[:class].to_s || '*'
       value = options[:attribute] || '*'
       is_match = Proc.new { |e| (e =~ value) != nil }
-      self[key].empty? || self[key].any?{|e| is_match.call(e)} || (key != '*' && self['*'].any?{|e| is_match.call(e)})
+      # broken out for debugging
+      result = false
+      if self.has_key? key
+        result = self[key].empty?
+        #puts "self[key].empty?: #{result}"
+        result = self[key].any?{|e| is_match.call(e)} unless result
+        #puts "self[key].any?{|e| is_match.call(e)}: #{result}"
+      end
+      result = key != '*' && self['*'].any?{|e| is_match.call(e)} unless result
+      #puts "key != '*' && self['*'].any?{|e| is_match.call(e)}: #{result}"
+      #puts "#{key}\##{value} exclude?: #{result}"
+      result
     end
     # the format is 'class#attribute'
     # the attribute can be a regular expression string
@@ -22,8 +33,8 @@ module ActiveAvro
     def self.build(filter_expressions = [])
       f = Filter.new
       filter_expressions.each do |fe|
-        e = fe.is_a?(ActiveAvro::Filter::Entry) ? fe : Entry.parse(fe)
-        f[e.class_name] << e.attribute
+        fe = Entry.parse(fe) unless fe.is_a?(ActiveAvro::Filter::Entry)
+        f[fe.class_name] << fe.attribute
       end
       f.compact!
       f
@@ -65,7 +76,7 @@ module ActiveAvro
         Entry.new(class_name, attr)
       end
       def to_s
-        "#{@class_name}\##{@attribute.to_s}"
+        "#{@class_name}\##{@attribute.inspect}"
       end
       private
       def attribute=(value)
