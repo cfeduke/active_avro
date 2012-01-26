@@ -1,4 +1,4 @@
-class CreateYesNo < ActiveRecord::Migration
+class CreateChoice < ActiveRecord::Migration
   def self.up
     create_table :choices do |t|
       t.string :name
@@ -48,6 +48,7 @@ class CreatePeople < ActiveRecord::Migration
       t.string :name
       t.date :date_of_birth
       t.integer :parent_id
+      t.integer :gender_id
       t.timestamps
     end
   end
@@ -56,7 +57,7 @@ class CreatePeople < ActiveRecord::Migration
   end
 end
 
-CreateYesNo.up
+CreateChoice.up
 CreateGender.up
 CreateDma.up
 CreatePets.up

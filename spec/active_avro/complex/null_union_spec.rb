@@ -8,7 +8,7 @@ module ActiveAvro
         its("last"){ should == 'null' }
       end
       describe "#to_hash" do
-        subject { NullUnion.new(%w(xyz)).to_hash }
+        subject { NullUnion.new(%w(xyz)).to_partial_schema }
         it "should result in an array with two elements" do
           subject.should be_an(::Array)
           subject.length.should == 2

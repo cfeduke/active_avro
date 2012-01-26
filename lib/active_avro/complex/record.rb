@@ -59,13 +59,13 @@ module ActiveAvro
         @fields ||= []
       end
 
-      def to_hash
+      def to_partial_schema
         # if there are no fields then just return the name - assume its already been embedded
         has_fields = @fields && @fields.length > 0
         return @name unless has_fields
         h = { :name => @name, :type => 'record' }
         if has_fields
-          h[:fields] = @fields.map { |f| f.to_hash }
+          h[:fields] = @fields.map { |f| f.to_partial_schema }
         end
         h
       end
@@ -80,11 +80,11 @@ module ActiveAvro
           Field.new(column.name, TypeConverter.to_avro(column.type))
         end
 
-        def to_hash
+        def to_partial_schema
           type =
               case
                 when @type.is_a?(Symbol) then @type.to_s
-                else @type.to_hash
+                else @type.to_partial_schema
               end
           { :name => @name, :type => type }
         end

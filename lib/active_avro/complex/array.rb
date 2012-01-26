@@ -6,8 +6,8 @@ module ActiveAvro
         @items = record
       end
 
-      def to_hash
-        items = @items.respond_to?(:to_hash) ? @items.to_hash : @items.to_s
+      def to_partial_schema
+        items = @items.respond_to?(:to_partial_schema) ? @items.to_partial_schema : @items.to_s
         { :type => 'array', :items => items }
       end
     end

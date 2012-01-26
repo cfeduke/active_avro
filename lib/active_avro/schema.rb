@@ -15,7 +15,7 @@ module ActiveAvro
     end
 
     def to_json
-      @record.to_hash.to_json
+      @record.to_partial_schema.to_json
     end
   end
 end
