@@ -11,32 +11,9 @@ module ActiveAvro
       ENUM_PATH = 'config/active_avro_enums.yml'
 
       def execute
-        # try to read ignore filter
-        filter = nil
-        if File.exists? IGNORE_FILTER_PATH
-          begin
-            filter = ActiveAvro::Filter.from_yaml(File.open(IGNORE_FILTER_PATH))
-          rescue
-            console_message %Q{Warning: unable to load #{IGNORE_FILTER_PATH} due to #{$!}}
-          end
-        else
-          filter = ActiveAvro::Filter.new
-          console_message %Q{Warning: no "#{IGNORE_FILTER_PATH}" file, all attributes will be reflected in the schema.}
-        end
-        enums = []
-        if File.exists? ENUM_PATH
-          begin
-            enums_data = YAML::load(File.open(ENUM_PATH))
-            # Model: { options }
-            enums_data.each do |e|
-              enums << { e.first => e.second }
-            end
-          rescue
-            console_message %Q{Warning: unable to load #{ENUM_PATH} due to #{$!}}
-            enums = [] # reset, just in case
-          end
-        end
-        s = ActiveAvro::Schema.new(name.constantize, filter: filter, enums: enums)
+        aa_opts = ActiveAvro::Options.new(IGNORE_FILTER_PATH, ENUM_PATH)
+        aa_opts.messages.each { |msg| console_message msg }
+        s = ActiveAvro::Schema.new(name.constantize, aa_opts.to_hash)
 
         str_json = s.to_json
         if options[:human_readable]
