@@ -9,7 +9,7 @@ module ActiveAvro
 
       def initialize(klass, node = nil, options = {})
         @name = klass.name
-        @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), klass)
+        @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), { :klass => klass })
         if node.nil?
           node = @node
         else
@@ -17,7 +17,7 @@ module ActiveAvro
         end
 
         if @node.node_depth > 0
-          return if @node.parentage.any?{ |n| n.content == klass }
+          return if @node.parentage.any?{ |n| n.content[:klass] == klass }
         end
         @fields = []
         @filter = options[:filter] || Filter.new
@@ -43,6 +43,8 @@ module ActiveAvro
             @fields << Field.new(field_name, embedded) if (embedded)
           end
         end
+
+        @node.content[:record] = self
       end
       def embedded?
         @embedded
@@ -78,6 +80,19 @@ module ActiveAvro
         h
       end
 
+      def cast(instance)
+        return nil if instance.nil?
+        # when we don't have any fields then we need to go back up the tree to find the declaring type
+        fields = @fields
+        unless fields
+          declaring_node = @node.parentage.find { |n| instance.is_a?(n.content[:klass]) && !(n.content[:record].fields.empty?) }
+          fields = declaring_node.content[:record].fields
+        end
+        attributes = fields.map { |f| f.cast(instance) }
+        result = { }
+        attributes.each { |attr| result[attr.first[0]] = attr.first[1] }
+        result
+      end
     end
   end
 end

@@ -25,10 +25,10 @@ module ActiveAvro
 
     describe "#convert_to_hash" do
       it "should raise an error when the instance to convert is not the class the schema represents" do
-        ->{Schema.new(Person).convert_to_hash(Pet.new)}.should raise_error(::ArgumentError)
+        ->{Schema.new(Person).cast(Pet.new)}.should raise_error(::ArgumentError)
       end
       it "should raise an error when the instance to convert is nil" do
-        ->{Schema.new(Person).convert_to_hash(nil)}.should raise_error(::ArgumentError)
+        ->{Schema.new(Person).cast(nil)}.should raise_error(::ArgumentError)
       end
     end
 

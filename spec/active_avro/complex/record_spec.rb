@@ -39,10 +39,26 @@ module ActiveAvro
           end
         end
 
-        describe "#to_hash" do
+        describe "#to_partial_schema" do
           subject { Record.new(Person).to_partial_schema }
           its([:name]){ should == 'Person' }
           its([:fields]) { should be_an ::Array }
+        end
+
+        describe "#cast" do
+          context "when the instance is nil" do
+            subject { Record.new(Person).cast(nil) }
+            it { should be_nil }
+          end
+          context "when the instance is legal" do
+            let(:charles) { Person.find_by_name('Charles') }
+            subject { Record.new(Person).cast(charles) }
+            it { should_not be_nil }
+            its([:name]){ should == 'Charles' }
+            its([:pets]){ should_not be_empty }
+            its([:pets]){ subject.first[:name].should == 'Shreen' }
+            its([:pets]){ subject.second[:name].should == 'Sobek' }
+          end
         end
       end
 

@@ -18,6 +18,13 @@ module ActiveAvro
             end
         { :name => @name, :type => type }
       end
+
+      def cast(instance)
+        sym = @name.to_sym
+        attr = instance.send(sym)
+        attr = @type.cast(attr) if @type.respond_to?(:cast)
+        { sym => attr }
+      end
     end
   end
 end

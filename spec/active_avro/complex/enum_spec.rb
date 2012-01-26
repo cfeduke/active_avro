@@ -46,6 +46,19 @@ module ActiveAvro
         its([:name]) { should == 'Choice' }
         its([:symbols]) { should == %w(Unknown Yes No) }
       end
+
+      describe '#cast' do
+        context "when using the defaults" do
+          let(:male) { Gender.new(name: 'Male', id: 1)}
+          subject { Enum.new(Gender).cast(male) }
+          it { should == 'Male' }
+        end
+        context "when using a specified field" do
+          let(:dma) { Dma.new(dma_id:12, zip_code: '99101') }
+          subject { Enum.new(Dma, name_attribute_name: 'zip_code').cast(dma) }
+          it { should == '99101' }
+        end
+      end
     end
   end
 end

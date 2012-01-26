@@ -29,10 +29,15 @@ module ActiveAvro
         @values.insert(0, { :value => 0, :name => @zero_name }) unless @values.first[:value] == 0
         @values
       end
+
       def to_partial_schema
         h = { :type => 'enum', :name => @klass.name }
         h[:symbols] = @values.map { |v| v[:name] }
         h
+      end
+
+      def cast(instance)
+        instance.send @name_attribute_name.to_sym
       end
     end
   end

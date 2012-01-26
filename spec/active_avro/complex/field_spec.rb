@@ -8,7 +8,7 @@ module ActiveAvro
         its("name") { should == 'name' }
         its("type") { should == :string }
       end
-      describe "#to_hash" do
+      describe "#to_partial_schema" do
         subject { Field.new('xyz', TypeConverter.to_avro(:integer)).to_partial_schema }
         its([:name]) { should == 'xyz' }
         context "when type is a symbol" do
@@ -30,6 +30,19 @@ module ActiveAvro
           end
         end
       end
+
+      describe "#cast" do
+        let!(:person) { Person.new(name: 'Charles', :gender => Gender.new(name: 'Male')) }
+        context "when converting primitive types" do
+          subject { Field.new('name', TypeConverter.to_avro(:string)).cast(person) }
+          it { should == { :name => 'Charles' } }
+        end
+        context "when converting enums" do
+          subject { Field.new('gender', Enum.new(Gender)).cast(person) }
+          it { should == { :gender => 'Male' } }
+        end
+      end
+
     end
   end
 end

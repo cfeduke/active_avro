@@ -20,10 +20,10 @@ module ActiveAvro
     end
 
     # converts the instance to a hash representative of the schema
-    def convert_to_hash(instance)
+    def cast(instance)
       raise ArgumentError.new("instance must not be nil") if instance.nil?
       raise ArgumentError.new("instance must be an instance of #{@klass.name}") unless instance.is_a? @klass
-      @structure.convert_to_hash(instance)
+      @record.cast(instance)
     end
   end
 end
