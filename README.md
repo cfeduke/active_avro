@@ -8,7 +8,7 @@ within the Person record type definition is required).
 
 ActiveAvro requires Rails 3.x or later.
 
-# Getting Started
+## Getting Started
 
 In your Gemfile:
 
@@ -21,22 +21,22 @@ your types.
 
 (Where `Person` is one of your models.)
 
-# Configuration
+## Configuration
 
 ActiveAvro derives its configuration from two files in your Rails application's `/config` directory:
 
     active_avro_enums.yml
     active_avro_ignore_filter.yml
 
-== active_avro_enums.yml
+### `active_avro_enums.yml`
 
 Defines the ActiveRecord models that should be treated as enumerated values instead of full blown models.  By
 convention the `id` attribute is assumed to be the enum's value and the `name` attribute its name - and this is what is
 placed in the schema definition.  Because Avro's enums are zero based a 0-value name is automatically generated when
 the enumeration's values are retrieved with the literal value "Unknown."
 
-The options 'zero_name', 'value_attribute_name' and 'name_attribute_name' are configurable through the
-'active_avro_enums.yml' file.
+The options `zero_name`, `value_attribute_name` and `name_attribute_name` are configurable through the
+`active_avro_enums.yml` file.
 
 Example:
 
@@ -46,12 +46,12 @@ Example:
 In the above example the ActiveRecord models AdGroupType and CampaignStatus will be placed in the schema definition
 of any class associated with them as enums instead of records.
 
-== active_avro_ignore_filter.yml
+### `active_avro_ignore_filter.yml`
 
 Defines the classes and attributes to ignore when generating the schema.  Some fields, like foreign key identifiers, may
 not need to be serialized if the entire child class' hierarchy is included in the schema.  Wildcard (as `'*'` - ticks
-required in a YAML file) and ActiveRecord class names can be placed in this file.  Regular expressions may be specified
-for attribute names.
+required in a YAML file for the asterisk) and ActiveRecord class names can be placed in this file.  Regular expressions
+may be specified for attribute names.
 
 Example:
 
@@ -64,11 +64,11 @@ Example:
      - active_admin_comments
      - ads
 
-In the above example our base ActiveRecord model class is `Ad` so we wildcard ignore anything that may include a
+In the above example the base ActiveRecord model class is `Ad` so we wildcard ignore anything that may include a
 collection of ads, as well as several other attributes.  Additionally the `ad_groups` attribute for is of the AdStatus
 ActiveRecord class type is also ignored.
 
-# Dynamic Schema Generation
+## Dynamic Schema Generation
 
 Generation of schemas at runtime can be done but it is costly in terms of CPU time.  Its recommended that schemas are
 generated once and kept in memory for the lifetime of your application.  In memory schemas are necessary to serialize
@@ -80,7 +80,7 @@ files at runtime:
     options = ActiveAvro::Options.new('config/active_avro_ignore_filter.yml', 'config/active_avro_enums.yml')
     ad_schema = Schema.new(Ad, options)
 
-# Serialization
+## Serialization
 
 A schema can be used to serialize the class hierarchy for the model class its based upon:
 
@@ -89,7 +89,7 @@ A schema can be used to serialize the class hierarchy for the model class its ba
     # at this point ad_hash is a Hash representative of the schema contained in ad_schema
     # you can use the JSON library to serialize it for transmission
 
-# Working with the Apache Avro gem
+## Working with the Apache Avro gem
 
 The [Apache Avro](https://github.com/apache/avro/tree/trunk/lang/ruby) library works with JSON schema definitions for Avro and hashes.
 The ActiveAvro gem was written specifically with this in mind:
