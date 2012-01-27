@@ -58,6 +58,10 @@ module ActiveAvro
             its([:pets]){ should_not be_empty }
             its([:pets]){ subject.first[:name].should == 'Shreen' }
             its([:pets]){ subject.second[:name].should == 'Sobek' }
+            it "should use the built in TypeConverter for Time instances" do
+              expected = charles.created_at.to_i * 1_000
+              subject[:created_at].should == expected
+            end
           end
         end
       end
