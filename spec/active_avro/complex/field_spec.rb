@@ -14,11 +14,11 @@ module ActiveAvro
         subject { Field.new('xyz', TypeConverter.to_avro(:integer)).to_partial_schema }
         its([:name]) { should == 'xyz' }
         context "when type is a symbol" do
-          its([:type]) { should == TypeConverter.to_avro(:integer).to_s }
+          its([:type]) { should == %w(int null) }
         end
         context "when type is a record" do
           subject { Field.new('xyz', Record.new(Pet)).to_partial_schema }
-          its([:type]){ should be_a Hash }
+          it { subject.should be_a Hash }
         end
         context "when type is an enum" do
           subject { Field.new('gender', Enum.new(Gender)).to_partial_schema }

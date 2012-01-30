@@ -24,10 +24,10 @@ module ActiveAvro
             pets = subject.fields.find{ |f| f.name == 'pets' }
             pets.should_not be_nil
           end
-          #it "doesn't remap known types as embedded types" do
-          #  parent = subject.fields.find{ |f| f.name == 'parent' }
-          #  parent.type.first.name.should == 'Person'
-          #end
+          it "doesn't remap known types as embedded types" do
+            parent = subject.fields.find{ |f| f.name == 'parent' }
+            parent.type.first.name.should == 'Person'
+          end
           it "maps the pets relationship as an embedded type array" do
             pets = subject.fields.find{ |f| f.name == 'pets' }
             pets.type.should be_a ActiveAvro::Complex::Array

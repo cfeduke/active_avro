@@ -13,7 +13,8 @@ module ActiveAvro
       def to_partial_schema
         type =
             case
-              when @type.is_a?(Symbol) then @type.to_s
+              # this needs to become more configurable
+              when @type.is_a?(Symbol) then NullUnion.new([@type.to_s])
               else @type.to_partial_schema
             end
         { :name => @name, :type => type }
