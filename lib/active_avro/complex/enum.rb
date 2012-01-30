@@ -37,7 +37,10 @@ module ActiveAvro
       end
 
       def cast(instance)
-        instance.send @name_attribute_name.to_sym
+        return @zero_name if instance.nil?
+        result = instance.send @name_attribute_name.to_sym
+        result = @zero_name if result.nil?
+        result
       end
     end
   end

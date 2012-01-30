@@ -58,6 +58,10 @@ module ActiveAvro
           subject { Enum.new(Dma, name_attribute_name: 'zip_code').cast(dma) }
           it { should == '99101' }
         end
+        context "when the enumerated value is nil" do
+          subject { Enum.new(Gender).cast(nil) }
+          it { should == Enum::DEFAULT_ZERO_NAME }
+        end
       end
     end
   end
