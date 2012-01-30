@@ -40,7 +40,7 @@ module ActiveAvro
           subject['pets'].first.should_not have_key 'name'
         end
         it "should not include the ignored Person#name (specifically parent) field" do
-            subject['parent'].should be_a Hash
+          subject['parent'].should be_a Hash
           subject['parent'].should_not have_key 'name'
         end
       end

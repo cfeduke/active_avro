@@ -18,6 +18,7 @@ module ActiveAvro
         @klass.nil? ? 'nil' : @klass.name
       end
       def get_values
+        # TODO throw an error if the name isn't a valid Avro identifier
         if @klass.nil? || !(@klass.respond_to? :order)
           @values = []
           return @values
@@ -37,6 +38,7 @@ module ActiveAvro
       end
 
       def cast(instance)
+        # TODO throw an error if the name isn't a valid Avro identifier
         return @zero_name if instance.nil?
         result = instance.send @name_attribute_name.to_sym
         result = @zero_name if result.nil?

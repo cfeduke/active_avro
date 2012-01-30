@@ -65,6 +65,11 @@ module ActiveAvro
             subject['created_at'].should == expected
           end
         end
+        context "when the instance has a null enum value" do
+          let(:person) { Person.new(:name => 'Lauren', :gender => nil) }
+          subject { Record.new(Person, nil, enums: [{'Gender' => { }}]).cast(person) }
+          its(['gender']) { should_not be_nil }
+        end
       end
     end
 
