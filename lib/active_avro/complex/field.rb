@@ -21,8 +21,15 @@ module ActiveAvro
 
       def cast(instance)
         sym = @name.to_sym
+        if instance.nil?
+          return { sym => nil }
+        end
         attr = instance.send(sym)
+        if attr.nil?
+          return { sym => nil }
+        end
         attr = @type.cast(attr) if @type.respond_to?(:cast)
+        #puts "@type.respond_to?(:cast): #{@name}\##{@type.class.name}: #{@type.respond_to?(:cast)}"
         attr = TypeConverter.convert(attr)
         { sym => attr }
       end

@@ -4,10 +4,11 @@ module ActiveAvro
   module Complex
     # represents the Avro complex type record
     class Record
-      attr_accessor :name, :fields
+      attr_accessor :name, :fields, :klass
       attr_reader :node, :filter, :enums
 
       def initialize(klass, node = nil, options = {})
+        @klass = klass
         @name = klass.name
         @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), { :klass => klass })
         if node.nil?

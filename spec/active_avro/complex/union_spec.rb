@@ -34,6 +34,10 @@ module ActiveAvro
               union.cast(Gender.new(name: 'Male')).should == 'Male'
             end
           end
+          context "when a record is specified" do
+            subject { Union[Record.new(Person)].cast(Person.find_by_name('Charles')) }
+            it { should be_a Hash }
+          end
         end
       end
     end

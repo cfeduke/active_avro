@@ -3,11 +3,13 @@ require 'spec_helper'
 module ActiveAvro
   module Complex
     describe Field do
+
       describe "self#from_column" do
         subject { Field.from_column(Person.columns.find { |c| c.name == 'name' }) }
         its("name") { should == 'name' }
         its("type") { should == :string }
       end
+
       describe "#to_partial_schema" do
         subject { Field.new('xyz', TypeConverter.to_avro(:integer)).to_partial_schema }
         its([:name]) { should == 'xyz' }
@@ -32,10 +34,15 @@ module ActiveAvro
       end
 
       describe "#cast" do
-        let!(:person) { Person.new(name: 'Charles', :gender => Gender.new(name: 'Male')) }
+        let!(:person) { Person.find_by_name 'Charles' }
         context "when converting primitive types" do
           subject { Field.new('name', TypeConverter.to_avro(:string)).cast(person) }
           it { should == { :name => 'Charles' } }
+        end
+        context "when converting records" do
+          subject { Field.new('gender', Record.new(Gender)).cast(person) }
+          it { should_not be_nil }
+          it { should be_a Hash }
         end
         context "when converting enums" do
           subject { Field.new('gender', Enum.new(Gender)).cast(person) }

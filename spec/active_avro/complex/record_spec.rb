@@ -24,10 +24,10 @@ module ActiveAvro
             pets = subject.fields.find{ |f| f.name == 'pets' }
             pets.should_not be_nil
           end
-          it "doesn't remap known types as embedded types" do
-            parent = subject.fields.find{ |f| f.name == 'parent' }
-            parent.type.first.name.should == 'Person'
-          end
+          #it "doesn't remap known types as embedded types" do
+          #  parent = subject.fields.find{ |f| f.name == 'parent' }
+          #  parent.type.first.name.should == 'Person'
+          #end
           it "maps the pets relationship as an embedded type array" do
             pets = subject.fields.find{ |f| f.name == 'pets' }
             pets.type.should be_a ActiveAvro::Complex::Array
@@ -38,34 +38,35 @@ module ActiveAvro
             gender_attr.type.should be_a ActiveAvro::Complex::Enum
           end
         end
+      end
 
-        describe "#to_partial_schema" do
-          subject { Record.new(Person).to_partial_schema }
-          its([:name]){ should == 'Person' }
-          its([:fields]) { should be_an ::Array }
+      describe "#to_partial_schema" do
+        subject { Record.new(Person).to_partial_schema }
+        its([:name]){ should == 'Person' }
+        its([:fields]) { should be_an ::Array }
+      end
+
+      describe "#cast" do
+        context "when the instance is nil" do
+          subject { Record.new(Person).cast(nil) }
+          it { should be_nil }
         end
-
-        describe "#cast" do
-          context "when the instance is nil" do
-            subject { Record.new(Person).cast(nil) }
-            it { should be_nil }
-          end
-          context "when the instance is legal" do
-            let(:charles) { Person.find_by_name('Charles') }
-            subject { Record.new(Person).cast(charles) }
-            it { should_not be_nil }
-            its([:name]){ should == 'Charles' }
-            its([:pets]){ should_not be_empty }
-            its([:pets]){ subject.first[:name].should == 'Shreen' }
-            its([:pets]){ subject.second[:name].should == 'Sobek' }
-            it "should use the built in TypeConverter for Time instances" do
-              expected = charles.created_at.to_i * 1_000
-              subject[:created_at].should == expected
-            end
+        context "when the instance is legal" do
+          let(:charles) { Person.find_by_name('Charles') }
+          subject { Record.new(Person).cast(charles) }
+          it { should_not be_nil }
+          its([:name]){ should == 'Charles' }
+          its([:pets]){ should_not be_empty }
+          its([:pets]){ subject.first.should be_a Hash }
+          its([:pets]){ subject.first[:name].should == 'Shreen' }
+          its([:pets]){ subject.second[:name].should == 'Sobek' }
+          it "should use the built in TypeConverter for Time instances" do
+            expected = charles.created_at.to_i * 1_000
+            subject[:created_at].should == expected
           end
         end
       end
-
     end
+
   end
 end

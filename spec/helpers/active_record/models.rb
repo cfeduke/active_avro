@@ -6,7 +6,7 @@ class Person < ActiveRecord::Base
   belongs_to :gender
 end
 class Pet < ActiveRecord::Base
-  belongs_to :owner, :class_name => 'Person', :foreign_key => :owner_id
+  #belongs_to :owner, :class_name => 'Person', :foreign_key => :owner_id
 end
 class Choice < ActiveRecord::Base
 

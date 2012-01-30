@@ -23,12 +23,26 @@ module ActiveAvro
       end
     end
 
-    describe "#convert_to_hash" do
+    describe "#cast" do
       it "should raise an error when the instance to convert is not the class the schema represents" do
         ->{Schema.new(Person).cast(Pet.new)}.should raise_error(::ArgumentError)
       end
       it "should raise an error when the instance to convert is nil" do
         ->{Schema.new(Person).cast(nil)}.should raise_error(::ArgumentError)
+      end
+
+      context "when some fields are ignored" do
+        let(:filter) { Filter.build(%W(Pet#name Person#name)) }
+        let(:schema) { Schema.new(Person, filter: filter) }
+        let(:person) { Person.find_by_name 'Charles' }
+        subject { schema.cast(person) }
+        it "should not include the ignored Pet#name field" do
+          subject[:pets].first.should_not have_key :name
+        end
+        it "should not include the ignored Person#name (specifically parent) field" do
+            subject[:parent].should be_a Hash
+          subject[:parent].should_not have_key :name
+        end
       end
     end
 
