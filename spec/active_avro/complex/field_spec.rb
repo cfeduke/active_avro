@@ -37,7 +37,7 @@ module ActiveAvro
         let!(:person) { Person.find_by_name 'Charles' }
         context "when converting primitive types" do
           subject { Field.new('name', TypeConverter.to_avro(:string)).cast(person) }
-          it { should == { :name => 'Charles' } }
+          it { should == { 'name' => 'Charles' } }
         end
         context "when converting records" do
           subject { Field.new('gender', Record.new(Gender)).cast(person) }
@@ -46,7 +46,7 @@ module ActiveAvro
         end
         context "when converting enums" do
           subject { Field.new('gender', Enum.new(Gender)).cast(person) }
-          it { should == { :gender => 'Male' } }
+          it { should == { 'gender' => 'Male' } }
         end
       end
 

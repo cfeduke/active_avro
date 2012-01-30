@@ -37,11 +37,11 @@ module ActiveAvro
         let(:person) { Person.find_by_name 'Charles' }
         subject { schema.cast(person) }
         it "should not include the ignored Pet#name field" do
-          subject[:pets].first.should_not have_key :name
+          subject['pets'].first.should_not have_key 'name'
         end
         it "should not include the ignored Person#name (specifically parent) field" do
-            subject[:parent].should be_a Hash
-          subject[:parent].should_not have_key :name
+            subject['parent'].should be_a Hash
+          subject['parent'].should_not have_key 'name'
         end
       end
     end

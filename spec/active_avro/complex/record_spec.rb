@@ -55,14 +55,14 @@ module ActiveAvro
           let(:charles) { Person.find_by_name('Charles') }
           subject { Record.new(Person).cast(charles) }
           it { should_not be_nil }
-          its([:name]){ should == 'Charles' }
-          its([:pets]){ should_not be_empty }
-          its([:pets]){ subject.first.should be_a Hash }
-          its([:pets]){ subject.first[:name].should == 'Shreen' }
-          its([:pets]){ subject.second[:name].should == 'Sobek' }
+          its(['name']){ should == 'Charles' }
+          its(['pets']){ should_not be_empty }
+          its(['pets']){ subject.first.should be_a Hash }
+          its(['pets']){ subject.first['name'].should == 'Shreen' }
+          its(['pets']){ subject.second['name'].should == 'Sobek' }
           it "should use the built in TypeConverter for Time instances" do
             expected = charles.created_at.to_i * 1_000
-            subject[:created_at].should == expected
+            subject['created_at'].should == expected
           end
         end
       end
