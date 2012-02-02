@@ -5,12 +5,12 @@ module ActiveAvro
       DEFAULT_VALUE_ATTRIBUTE_NAME = 'id'
       DEFAULT_NAME_ATTRIBUTE_NAME = 'name'
       attr_reader :zero_name, :value_attribute_name, :name_attribute_name, :klass,
-        :values
+        :values, :options
       def initialize(klass, options = {})
-        options ||= {}
-        @zero_name = options[:zero_name] || DEFAULT_ZERO_NAME
-        @value_attribute_name = options[:value_attribute_name] || DEFAULT_VALUE_ATTRIBUTE_NAME
-        @name_attribute_name = options[:name_attribute_name] || DEFAULT_NAME_ATTRIBUTE_NAME
+        @options = options || {}
+        @zero_name = @options[:zero_name] || DEFAULT_ZERO_NAME
+        @value_attribute_name = @options[:value_attribute_name] || DEFAULT_VALUE_ATTRIBUTE_NAME
+        @name_attribute_name = @options[:name_attribute_name] || DEFAULT_NAME_ATTRIBUTE_NAME
         @klass = klass
         get_values
       end
@@ -33,6 +33,7 @@ module ActiveAvro
 
       def to_partial_schema
         h = { :type => 'enum', :name => @klass.name }
+        h[:namespace] = @options[:namespace] if @options[:namespace]
         h[:symbols] = @values.map { |v| v[:name] }
         h
       end

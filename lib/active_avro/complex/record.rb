@@ -5,11 +5,12 @@ module ActiveAvro
     # represents the Avro complex type record
     class Record
       attr_accessor :name, :fields, :klass
-      attr_reader :node, :filter, :enums
+      attr_reader :node, :filter, :enums, :options
 
       def initialize(klass, node = nil, options = {})
         @klass = klass
         @name = klass.name
+        @options = options
         @node = Tree::TreeNode.new((node.nil? ? klass.name : "#{node.name}\\#{klass.name}"), { :klass => klass })
         if node.nil?
           node = @node
@@ -75,6 +76,7 @@ module ActiveAvro
         has_fields = @fields && @fields.length > 0
         return @name unless has_fields
         h = { :name => @name, :type => 'record' }
+        h[:namespace] = @options[:namespace] if @options[:namespace]
         if has_fields
           h[:fields] = @fields.map { |f| f.to_partial_schema }
         end

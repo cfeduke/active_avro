@@ -45,6 +45,10 @@ module ActiveAvro
         its([:type]) { should == 'enum' }
         its([:name]) { should == 'Choice' }
         its([:symbols]) { should == %w(Unknown Yes No) }
+        context "when a namespace is specified" do
+          subject { Enum.new(Choice, namespace:'com.deploymentzone.activeavro').to_partial_schema }
+          its([:namespace]) { should == 'com.deploymentzone.activeavro' }
+        end
       end
 
       describe '#cast' do

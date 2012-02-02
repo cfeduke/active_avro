@@ -44,6 +44,10 @@ module ActiveAvro
         subject { Record.new(Person).to_partial_schema }
         its([:name]){ should == 'Person' }
         its([:fields]) { should be_an ::Array }
+        context "when a namespace is specified" do
+          subject { Record.new(Person, nil, namespace: 'com.deploymentzone.activeavro').to_partial_schema }
+          its([:namespace]){ should == 'com.deploymentzone.activeavro' }
+        end
       end
 
       describe "#cast" do

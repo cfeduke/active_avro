@@ -5,7 +5,7 @@ module ActiveAvro
         :primary_key => :int, # this is possibly incorrect
         :string => :string,
         :text => :string,
-        :integer => :long,
+        :integer => :int,
         :float => :float,
         :decimal => :double,
         :datetime => :long,
