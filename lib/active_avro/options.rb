@@ -3,8 +3,8 @@ module ActiveAvro
   require 'yaml'
 
   class Options
-    attr_reader :messages, :filter, :enums
-    def initialize(ignore_filter_path, enum_path)
+    attr_reader :messages, :filter, :enums, :namespace
+    def initialize(ignore_filter_path, enum_path, namespace)
       @messages = []
       # try to read ignore filter
       @filter = nil
@@ -31,10 +31,14 @@ module ActiveAvro
           @enums = [] # reset, just in case
         end
       end
+
+      @namespace = namespace
     end
 
     def to_hash
-      { :filter => @filter, :enums => @enums }
+      result = { :filter => @filter, :enums => @enums }
+      result[:namespace] = @namespace if @namespace && @namespace.length > 0
+      result
     end
   end
 end
