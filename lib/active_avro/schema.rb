@@ -14,9 +14,12 @@ module ActiveAvro
       @record = ActiveAvro::Complex::Record.new(@klass, nil, options)
     end
 
-    def to_json
+    def structure
       @structure ||= @record.to_partial_schema
-      @structure.to_json
+    end
+
+    def to_json
+      self.structure.to_json
     end
 
     # converts the instance to a hash representative of the schema

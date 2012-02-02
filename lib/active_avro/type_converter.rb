@@ -43,6 +43,7 @@ module ActiveAvro
       # Avro doesn't support date/time or time types so we convert those to
       # milliseconds since epoch by default
       TypeConverter.register(Time, Proc.new { |t| t.to_i * 1_000 })
+      TypeConverter.register(DateTime, Proc.new { |t| t.to_i * 1_000 })
     end
 
     TypeConverter.register_default_converters
